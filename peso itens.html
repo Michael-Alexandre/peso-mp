@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"  crossorigin="anonymous">
+  <link href="estilo.css" rel="stylesheet">
+    <title>     _   Calcular Peso </title>
+</head>
+<body>
+    <h1> Calcular Peso de itens</h1>
+    <form id="form">
+        <label for="shape"> Escolha o formato: </label>
+        <select name="shape" id="shape">
+            <option value="cylinder"> Parafuso </option>
+            <option value="prism"> Estojo </option>
+        </select><br><br>
+        <div id="dimensions" class="center" ></div><br>
+
+        <input type="submit" value="Calcular">
+    </form><br>
+
+    <div id="results"></div>
+
+    <script>
+        document.getElementById("shape").addEventListener("change", function() {
+            let shape = document.getElementById("shape").value;
+            if (shape === "cylinder") {
+                document.getElementById("dimensions").innerHTML = `
+                    <label for="shank"> Fixaçao (mm):</label>
+                    <input type="number" id="shank" name="shank" min="0.0" max="500.0" step="0.1" value="200.0"><br><br>
+                    <label for="length"> Comprimento (mm):</label>
+                    <input type="number" id="length" name="length"><br><br>
+                    <label for="radius"> Diametro (mm):</label>
+                    <input type="number" id="radius" name="radius" min="0.1" max="50.0" step="0.1" value="3.2"><br><br>
+	     <label for="quantity">Quantidade:</label>
+	     <input type="number" id="quantity" name="quantity"><br><br> `;
+
+            } else {
+                document.getElementById("dimensions").innerHTML = `
+                    <label for="length"> Comprimento (mm):</label>
+                    <input type="number" id="length" name="length"><br><br>
+                    <label for="width"> Largura (mm):</label>
+                    <input type="number" id="width" name="width"><br><br>
+                    <label for="height"> Altura (mm):</label>
+                    <input type="number" id="height" name="height" min="0.1" max="50.0" step="0.1" value="25.4"><br><br>
+	    <label for="quantity"> Quantidade: </label>
+	    <input type="number" id="quantity" name="quantity"><br><br>`;
+            }
+        });
+
+        document.getElementById("form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let shape = document.getElementById("shape").value;
+            let length = document.getElementById("length").value;
+            let quantity = document.getElementById("quantity").value;
+            let volume;
+            let shankVolume;
+            if (shape === "cylinder") {
+                let shank = document.getElementById("shank").value;
+                let radius = document.getElementById("radius").value;
+	radius = radius / 2;
+                volume = Math.PI * Math.pow(radius, 2) * length;
+	shankVolume = Math.PI * Math.pow(radius, 2) * shank;
+            } else {
+                let length = document.getElementById("length").value;
+                let width = document.getElementById("width").value;
+                let height = document.getElementById("height").value;
+	let quantity = document.getElementById("quantity").value;
+	shankVolume = 0;
+                volume = length * width * height;
+            }
+            let polyacetalWeight = volume * 0.00141;
+            let aluminumWeight = volume * 0.002725;
+            let titaniumWeight = volume * 0.0045;
+            let stainlessSteelWeight = volume * 0.008;
+            let shankSteel = shankVolume * 0.008;
+            let shankTitanium = shankVolume * 0.0045;
+            document.getElementById("results").innerHTML = `
+                <p>Titanio: ${titaniumWeight.toFixed(1)} g (unit), ${((titaniumWeight * quantity/1000)).toFixed(3)} kg (total), Pega: ${shankTitanium.toFixed(1)} g </p>
+                <p>Inox: ${stainlessSteelWeight.toFixed(1)} g (unit), ${((stainlessSteelWeight * quantity/1000)).toFixed(3)} kg (total), Pega: ${shankSteel.toFixed(1)} g  <br></p>
+                <p>Poliacetal: ${polyacetalWeight.toFixed(1)} g (unit), ${((polyacetalWeight * quantity/1000)).toFixed(3)} kg (total)</p>
+                <p>Aluminio: ${aluminumWeight.toFixed(1)} g (unit), ${((aluminumWeight * quantity/1000)).toFixed(3)} kg (total)</p>`;
+        });
+    </script>
+</body>
+</html>
